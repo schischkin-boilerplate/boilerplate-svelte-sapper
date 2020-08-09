@@ -1,0 +1,7 @@
+version: "3"
+services:
+  web:
+    image: docker.pkg.github.com/schischkin-boilerplate/boilerplate-svelte-sapper/web:${COMMIT}
+    build:
+      context: .
+      dockerfile: Dockerfile
