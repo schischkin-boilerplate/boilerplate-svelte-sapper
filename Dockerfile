@@ -1,8 +1,11 @@
 FROM node:latest AS build
 
+ENV APP_ENV=production
+
 WORKDIR /app
 
 COPY package.json .
+COPY package-lock.json .
 
 RUN npm install
 
@@ -11,19 +14,16 @@ COPY . .
 RUN npm run build
 
 
-FROM caddy:2-alpine
+FROM node:14-alpine
 
-EXPOSE 8080 8443
+EXPOSE 3000
+
+ENV APP_ENV=production
 
 WORKDIR /app
 
-COPY ./Caddyfile /caddy/Caddyfile
+COPY --from=build /app/__sapper__/build/ /app/__sapper__/build
+COPY --from=build /app/node_modules/ /app/node_modules
+COPY --from=build /app/static/ /app/static
 
-COPY ./docker /docker
-RUN chmod +x /docker/entrypoint.sh
-
-RUN apk update && apk add nodejs
-
-COPY --from=build /app/__sapper_/build /app
-
-ENTRYPOINT [ "/docker/entrypoint.sh" ]
+CMD [ "node", "__sapper__/build/index.js" ]

@@ -1,7 +1,0 @@
-:8080 :8443 {
-	reverse_proxy * 127.0.0.1:3000 {
-		transport http {
-			tls
-		}
-	} 
-}
